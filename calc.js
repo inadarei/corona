@@ -2,43 +2,73 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function to_plot_data(data) {
-  console.log('------')
-  console.log(data);
+function to_plot_data(data, population=0) {
   plot_data = {};
   plot_data["x"] = [];
   plot_data["y"] = [];
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
         plot_data["x"].push(key);
-        plot_data["y"].push(data[key]);
+        if (population===0) {
+          plot_data["y"].push(data[key]);  
+        } else {
+          plot_data["y"].push(data[key]/population);
+        }
     }
   }
   plot_data['mode'] = 'lines+markers';
-  console.log(plot_data)
   return plot_data;
 }
 
-function draw (state, type) {
-  g = document.createElement('div');
-  g.setAttribute("id", "div" + type + name);
-  document.body.appendChild(g);
+function draw (states, type) {
+  let data = [];
+  let data_percapita = [];
 
-  const only_state = states_data[state];
-  console.log(only_state[type]);
-  const plot_data = to_plot_data(only_state[type])
-  console.log(plot_data);
+  states.forEach((state) => {
+    const only_state = states_data[state];
+    const plot_data = to_plot_data(only_state[type])
+    plot_data["name"] = state;
 
-  const data = [ plot_data ];
+    const plot_data_percapita = to_plot_data(only_state[type], state_populations[state])
+    plot_data_percapita["name"] = state;
 
-  var layout = {
-    title: capitalize(type) + ' in ' + state
+    data.push(plot_data);
+    data_percapita.push(plot_data_percapita);
+  })
+
+  let layout = {
+    title: capitalize(type) + ' in ' + states
   };
+  Plotly.newPlot(type, data, layout);
 
-  console.log(data)
-  
-  Plotly.newPlot('div' + type + name, data, layout);
+  layout = {
+    title: ' Per Capita ' + capitalize(type) + ' in ' + states
+  };  
+  Plotly.newPlot(type + "_percapita", data_percapita, layout);
 }
 
-draw('New York', 'cases')
-draw('New York', 'deaths')
+function state_dropdown() {
+  states = [];
+  for (var key in states_data) {
+    states.push({id: key, text: key})
+  }
+
+  $("#state_selector").select2({
+    data: states,
+    maximumSelectionLength: 5
+  });
+  
+}
+state_dropdown();
+
+$("#show").click(function() {
+  const states = $('#state_selector').val();
+  if (states.length<1) {
+    $('#state_required').modal()
+    return;
+  }
+
+  draw(states, 'cases');
+  draw(states, 'deaths');
+  
+})

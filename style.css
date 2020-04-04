@@ -1,0 +1,23 @@
+div#cases, div#deaths,
+div#cases_percapita, div#deaths_percapita {
+  width: 100%;
+  height: 450px;
+}
+
+#cases {
+}
+
+#deaths {
+}
+
+#state_selector {
+  width: 30em;
+}
+
+.selection li {
+  color: black;
+}
+
+.navbar label {
+  color: white;
+}
