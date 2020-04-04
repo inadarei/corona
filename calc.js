@@ -47,6 +47,17 @@ function draw (states, type) {
   Plotly.newPlot(type + "_percapita", data_percapita, layout);
 }
 
+function show_results() {
+  const states = $('#state_selector').val();
+  if (states.length<1) {
+    $('#state_required').modal()
+    return;
+  }
+
+  draw(states, 'cases');
+  draw(states, 'deaths');
+}
+
 function state_dropdown() {
   states = [];
   for (var key in states_data) {
@@ -60,15 +71,9 @@ function state_dropdown() {
   
 }
 state_dropdown();
+$('#state_selector').val(['California','New York']);
+$('#state_selector').trigger('change');
+show_results();
 
-$("#show").click(function() {
-  const states = $('#state_selector').val();
-  if (states.length<1) {
-    $('#state_required').modal()
-    return;
-  }
+$("#show").click(show_results);
 
-  draw(states, 'cases');
-  draw(states, 'deaths');
-  
-})
