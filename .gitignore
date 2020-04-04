@@ -1,4 +1,7 @@
 # Logs
+_site
+.jekyll-cache/
+.vscode/
 logs
 *.log
 npm-debug.log*
