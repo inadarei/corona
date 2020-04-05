@@ -49,12 +49,12 @@ function draw (states, type) {
   })
 
   let layout = {
-    title: capitalize(type) + ' in ' + states
+    title: capitalize(type)
   };
   Plotly.newPlot(type, data, layout);
 
   layout = {
-    title: ' Per Capita ' + capitalize(type) + ' in ' + states
+    title: ' Per Capita ' + capitalize(type)
   };  
   Plotly.newPlot(type + "_percapita", data_percapita, layout);
 }
@@ -86,7 +86,7 @@ function state_dropdown() {
 
   $("#state_selector").select2({
     data: states,
-    maximumSelectionLength: 5
+    maximumSelectionLength: 7
   });
   
 }
