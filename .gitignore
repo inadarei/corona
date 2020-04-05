@@ -1,6 +1,8 @@
 # Logs
 _site
 .jekyll-cache/
+covid-19-data/
+.DS_Store
 .vscode/
 logs
 *.log
@@ -105,3 +107,5 @@ dist
 
 # TernJS port file
 .tern-port
+ms-demo-node
+covid-19-data
