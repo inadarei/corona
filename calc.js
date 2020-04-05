@@ -2,22 +2,28 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function to_plot_data(data, population=0) {
+function to_plot_data(data) {
   plot_data = {};
   plot_data["x"] = [];
   plot_data["y"] = [];
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
         plot_data["x"].push(key);
-        if (population===0) {
-          plot_data["y"].push(data[key]);  
-        } else {
-          plot_data["y"].push(data[key]/population);
-        }
+        plot_data["y"].push(data[key]);  
     }
   }
   plot_data['mode'] = 'lines+markers';
   return plot_data;
+}
+
+function percapita(data, population) {
+  let data_pop = {};
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      data_pop[key] = data[key]/population;
+    }
+  }
+  return data_pop;
 }
 
 function draw (states, type) {
@@ -25,15 +31,21 @@ function draw (states, type) {
   let data_percapita = [];
 
   states.forEach((state) => {
-    const only_state = states_data[state];
-    const plot_data = to_plot_data(only_state[type])
+    const only_state = states_data[state][type];
+
+    const plot_data = to_plot_data(only_state)
+    plot_data["name"] = state;    
+    data.push(plot_data);
+  })
+
+  states.forEach((state) => {
+    const only_state = states_data[state][type];
+    const population = state_populations[state];
+
+    const plot_data = to_plot_data(percapita(only_state, population))
     plot_data["name"] = state;
 
-    const plot_data_percapita = to_plot_data(only_state[type], state_populations[state])
-    plot_data_percapita["name"] = state;
-
-    data.push(plot_data);
-    data_percapita.push(plot_data_percapita);
+    data_percapita.push(plot_data);
   })
 
   let layout = {
@@ -49,6 +61,7 @@ function draw (states, type) {
 
 function show_results() {
   const states = $('#state_selector').val();
+
   if (states.length<1) {
     $('#state_required').modal()
     return;
@@ -57,6 +70,13 @@ function show_results() {
   draw(states, 'cases');
   draw(states, 'deaths');
 }
+// If the "show" button is clicked - show results
+$("#show").click(() => {
+  const states = $('#state_selector').val();
+  document.location.search = "states=" + states;
+  show_results();
+});
+
 
 function state_dropdown() {
   states = [];
@@ -69,6 +89,23 @@ function state_dropdown() {
     maximumSelectionLength: 5
   });
   
+}
+
+function init_selector() {
+  const params = new URLSearchParams(document.location.search.substring(1));
+  const states_param = params.get("states"); // is the string "Jonathan"
+
+  let states = [];
+  if (states_param != null) { 
+    states = states_param.split(',')
+  }
+
+  if (states.length === 0) {
+    states = ['California', 'New York']
+  }
+
+  $('#state_selector').val(states);
+  $('#state_selector').trigger('change');
 }
 
 /*
@@ -84,9 +121,7 @@ fetch(data_url)
 
 
 state_dropdown();
-$('#state_selector').val(['California','New York']);
-$('#state_selector').trigger('change');
+init_selector();
 show_results();
 
-$("#show").click(show_results);
 
