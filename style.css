@@ -11,7 +11,7 @@ div#cases_percapita, div#deaths_percapita {
 }
 
 #state_selector {
-  width: 30em;
+  width: 70%
 }
 
 .selection li {
