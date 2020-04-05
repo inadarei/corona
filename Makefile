@@ -13,4 +13,12 @@ endif
 
 .PHONY: checkout-data
 checkout-data:
+	- rm -rf covid-19-data/
 	- @${CHECKOUT_BIN}
+
+.PHONY: format-data
+format-data:
+	- ./corona-numbers.py
+
+.PHONY: refresh-data
+refresh-data: checkout-data format-data	

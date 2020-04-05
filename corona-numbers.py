@@ -1,4 +1,6 @@
-# https://github.com/nytimes/covid-19-data
+#! /usr/bin/env python3
+
+# Source: https://github.com/nytimes/covid-19-data
 import pandas as pd
 import json
 
@@ -13,5 +15,7 @@ for state in state_data.state.unique():
    .filter(items=['date', 'cases', 'deaths']) \
    .to_dict()
 
-with open('states.json', 'w') as f:
-    json.dump(data, f)
+data_js = "const states_data = " + json.dumps(data)
+
+with open('states.js', 'w') as f:
+    f.write(data_js)
