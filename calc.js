@@ -70,6 +70,19 @@ function state_dropdown() {
   });
   
 }
+
+/*
+const data_url = "https://covidtracking.com/api/states";
+fetch(data_url)
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data);
+  });
+*/
+
+
 state_dropdown();
 $('#state_selector').val(['California','New York']);
 $('#state_selector').trigger('change');
