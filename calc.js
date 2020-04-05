@@ -20,15 +20,35 @@ function percapita(data, population) {
   let data_pop = {};
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
-      data_pop[key] = data[key]/population;
+      data_pop[key] = data[key]/population*1000;
     }
   }
   return data_pop;
 }
 
+function doubling_nums(data) {
+  let ret_data = {}
+  let past_val, growth_rate, doubling_time;
+
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      if (past_val === 0) {
+        growth_rate = Number.MAX_SAFE_INTEGER;
+      } else {
+        growth_rate = Math.round((data[key] - past_val)/past_val * 100);
+      }
+      past_val = data[key];
+      doubling_time = 70/growth_rate;
+      ret_data[key] = doubling_time;
+    }
+  }
+  return ret_data;
+}
+
 function draw (states, type) {
   let data = [];
   let data_percapita = [];
+  let data_doubling = [];
 
   states.forEach((state) => {
     const only_state = states_data[state][type];
@@ -37,6 +57,12 @@ function draw (states, type) {
     plot_data["name"] = state;    
     data.push(plot_data);
   })
+
+  let layout = {
+    title: capitalize(type)
+  };
+  Plotly.newPlot(type, data, layout);
+
 
   states.forEach((state) => {
     const only_state = states_data[state][type];
@@ -48,15 +74,31 @@ function draw (states, type) {
     data_percapita.push(plot_data);
   })
 
-  let layout = {
-    title: capitalize(type)
-  };
-  Plotly.newPlot(type, data, layout);
-
   layout = {
-    title: ' Per Capita ' + capitalize(type)
+    title:  capitalize(type) + ' Per 1,000 Population'
   };  
   Plotly.newPlot(type + "_percapita", data_percapita, layout);
+
+  if (type == 'cases') {
+    states.forEach((state) => {
+      const only_state = states_data[state][type];
+      
+      const plot_data = to_plot_data(doubling_nums(only_state))
+      plot_data["name"] = state;
+      //plot_data['mode'] = 'markers';
+      plot_data['type'] = 'scatter';
+    
+      data_doubling.push(plot_data);
+    })
+  
+    layout = {
+      title: ' Doubling Time of ' + capitalize(type) + ', in Days'
+    };  
+    Plotly.newPlot(type + "_doubling", data_doubling, layout);
+  
+  }
+
+
 }
 
 function show_results() {
