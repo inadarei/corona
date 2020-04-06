@@ -29,8 +29,8 @@ function percapita(data, population) {
 function doubling_nums(data) {
   let ret_data = {}
   let past_val, growth_rate, doubling_time;
-
   for (var key in data) {
+    if (key < "2020-02-25") continue;
     if (data.hasOwnProperty(key)) {
       if (past_val === 0) {
         growth_rate = Number.MAX_SAFE_INTEGER;
@@ -38,7 +38,7 @@ function doubling_nums(data) {
         growth_rate = Math.round((data[key] - past_val)/past_val * 100);
       }
       past_val = data[key];
-      doubling_time = 70/growth_rate;
+      doubling_time = growth_rate;
       ret_data[key] = doubling_time;
     }
   }
@@ -92,7 +92,8 @@ function draw (states, type) {
     })
   
     layout = {
-      title: ' Doubling Time of ' + capitalize(type) + ', in Days'
+      //title: ' Doubling Time of ' + capitalize(type) + ', in Days'
+      title: ' Growth rate of ' + capitalize(type)
     };  
     Plotly.newPlot(type + "_doubling", data_doubling, layout);
   
