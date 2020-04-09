@@ -20,7 +20,7 @@ function percapita(data, population) {
   let data_pop = {};
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
-      data_pop[key] = data[key]/population*1000;
+      data_pop[key] = data[key]/population*100000;
     }
   }
   return data_pop;
@@ -30,7 +30,8 @@ function doubling_nums(data) {
   let ret_data = {}
   let past_val, growth_rate, doubling_time;
   for (var key in data) {
-    if (key < "2020-02-25") continue;
+    if (key < "2020-03-22") continue;
+    console.log(key);
     if (data.hasOwnProperty(key)) {
       if (past_val === 0) {
         growth_rate = Number.MAX_SAFE_INTEGER;
@@ -75,7 +76,7 @@ function draw (states, type) {
   })
 
   layout = {
-    title:  capitalize(type) + ' Per 1,000 Population'
+    title:  capitalize(type) + ' Per 100,000 Population'
   };  
   Plotly.newPlot(type + "_percapita", data_percapita, layout);
 
