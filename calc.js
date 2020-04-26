@@ -1,6 +1,18 @@
-function capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+let wmaMode = true;
+function switchWMA(_mode) {
+  wmaMode = _mode;
+  show_results();
 }
+
+function capitalize(string) {
+    let ret =  string.charAt(0).toUpperCase() + string.slice(1);
+    if (wmaMode) {
+      return ret + " (WMA)";
+    } else {
+      return ret;
+    }
+}
+
 
 function to_plot_data(data) {
   plot_data = {};
@@ -52,33 +64,27 @@ function growth_rates(data) {
 }
 
 function weighted_moving_averages(_data) {
-  console.log("wma");
-  console.dir(_data);
 
   const numvalues = Object.values(_data);
   const keys = Object.keys(_data);
   const result = {};
   let counter = 0;
-  const wma_cap = 14; // max points in the past to take into account, for weighted moving averages
+  const wma_cap = 30; // max points in the past to take into account, for weighted moving averages
 
   for (const key of  keys) {
     const currKey = keys[counter];
-    //let indexes = "";
     let sum_of_weights = 0;
     let sum_of_values = 0;
     for (let i = counter; i>=0; i--) {
       if ((counter - i) > wma_cap) break;
       const n = i+1; // must start with 1
-      //indexes += n + " ";
       sum_of_values += n * numvalues[i];
       sum_of_weights += n;
     }
     result[key] = sum_of_values / sum_of_weights;
     counter++;
-    //console.log(indexes)
   }
 
-  console.log(result);
   return result;
 }
 
@@ -86,10 +92,12 @@ function draw (states, type) {
   let data = [];
   let data_percapita = [];
   let data_growth = [];
-  let data_growth_wma = []; //weighted moving averages for smoothing
 
   states.forEach((state) => {
-    const only_state = states_data[state][type];
+    let only_state = states_data[state][type];
+    if (wmaMode) {
+      only_state = weighted_moving_averages(only_state);
+    }
 
     const plot_data = to_plot_data(only_state)
     plot_data["name"] = state;    
@@ -103,10 +111,14 @@ function draw (states, type) {
 
 
   states.forEach((state) => {
-    const only_state = states_data[state][type];
+    let only_state = states_data[state][type];
     const population = state_populations[state];
 
-    const plot_data = to_plot_data(percapita(only_state, population))
+    let percapita_values = percapita(only_state, population);
+    if (wmaMode) {
+      percapita_values = weighted_moving_averages(percapita_values);
+    }
+    const plot_data = to_plot_data(percapita_values)
     plot_data["name"] = state;
 
     data_percapita.push(plot_data);
@@ -120,32 +132,25 @@ function draw (states, type) {
   if (type == 'cases') {
     states.forEach((state) => {
       const only_state = states_data[state][type];
-      
-      const growth_nums = growth_rates(only_state);
-      const growth_nums_wma = weighted_moving_averages(growth_nums);
+
+      let growth_nums = growth_rates(only_state);
+
+      if (wmaMode) {
+        growth_nums = weighted_moving_averages(growth_nums);
+      }
       const plot_data = to_plot_data(growth_nums);
-      const plot_data_wma = to_plot_data(growth_nums_wma);
 
       plot_data["name"] = state;
       //plot_data['mode'] = 'markers';
       plot_data['type'] = 'scatter';
       data_growth.push(plot_data);
 
-      plot_data_wma["name"] = state;
-      //plot_data['mode'] = 'markers';
-      plot_data_wma['type'] = 'scatter';
-      data_growth_wma.push(plot_data_wma);
     })
   
     layout = {
-      title: ' Growth rate of ' + capitalize(type) + ' (Actuals)'
+      title: ' Growth rate of ' + capitalize(type)
     };  
     Plotly.newPlot(type + "_growth", data_growth, layout);
-
-    layout = {
-      title: ' Growth rate of ' + capitalize(type) + ' (Weighted Moving Averages)'
-    };  
-    Plotly.newPlot(type + "_growth_wma", data_growth_wma, layout);
 
   }
 
@@ -163,6 +168,7 @@ function show_results() {
   draw(states, 'cases');
   draw(states, 'deaths');
 }
+
 // If the "show" button is clicked - show results
 $("#show").click(() => {
   const states = $('#state_selector').val();
@@ -217,4 +223,7 @@ state_dropdown();
 init_selector();
 show_results();
 
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
 

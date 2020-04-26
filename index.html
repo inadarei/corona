@@ -13,20 +13,26 @@
   <body>
 
     <nav class="navbar navbar-expand-md navbar-light bg-dark">
-      <label for="state_selector">States:&nbsp;</label>
-      <select class="js-states form-control" 
-                id="state_selector" 
-                data-width="70%"
-                multiple="multiple"></select>
-      &nbsp;
-      <button type="button" class="btn btn-secondary" id="show">Show</button>
+        <label for="state_selector">States:&nbsp;</label>
+        <select class="js-states form-control" 
+                  id="state_selector" 
+                  data-width="70%"
+                  multiple="multiple"></select>
+        <!-- &nbsp;
+        <button type="button" class="btn btn-secondary" id="show">Show</button> -->
+        &nbsp;
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Show
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#" onClick="switchWMA(true)">Smoothed Graph (WMA)</a>
+            <a class="dropdown-item" href="#" onClick="switchWMA(false)">Actual Values</a>
+          </div>
+        </div>
     </nav>
 
-    <div id="container-fluid">
-      <div class="row">
-        <!--div class="col-sm"><div id="deaths_doubling"></div></div-->
-        <div class="col-sm"><div id="cases_growth_wma"></div></div>
-      </div>      
+    <div class="container-fluid">
 
       <div class="row">
         <!--div class="col-sm"><div id="deaths_doubling"></div></div-->
@@ -75,7 +81,6 @@
     </div>
   </div>
 </div>
-
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
