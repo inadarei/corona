@@ -69,7 +69,7 @@ function weighted_moving_averages(_data) {
   const keys = Object.keys(_data);
   const result = {};
   let counter = 0;
-  const wma_cap = 30; // max points in the past to take into account, for weighted moving averages
+  const wma_cap = 14; // max points in the past to take into account, for weighted moving averages
 
   for (const key of  keys) {
     const currKey = keys[counter];
