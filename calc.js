@@ -2,7 +2,7 @@ let wmaMode = true;
 function switchWMA(_mode) {
   wmaMode = _mode;
   const states = $('#state_selector').val();
-  document.location.search = "states=" + states;
+  document.location.search = "states=" + states + "&wma=" + wmaMode;
   show_results();
 }
 
