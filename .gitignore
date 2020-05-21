@@ -1,4 +1,5 @@
 # Logs
+venv
 _site
 .jekyll-cache/
 covid-19-data/
