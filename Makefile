@@ -18,7 +18,7 @@ checkout-data:
 
 .PHONY: format-data
 format-data:
-	- ./corona-numbers.py
+	- . venv/bin/activate && ./corona-numbers.py && deactivate
 
 .PHONY: refresh-data
 refresh-data: checkout-data format-data	

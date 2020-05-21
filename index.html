@@ -26,8 +26,8 @@
             Show
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#" onClick="switchWMA(true)">Smoothed Graph (WMA)</a>
             <a class="dropdown-item" href="#" onClick="switchWMA(false)">Actual Values</a>
+            <a class="dropdown-item" href="#" onClick="switchWMA(true)">7-Day Averages</a>            
           </div>
         </div>
     </nav>
@@ -39,6 +39,16 @@
         <div class="col-sm"><div id="cases_growth"></div></div>
       </div>   
 
+      <div class="row">
+        <div class="col-sm"><div id="deaths_new"></div></div>
+        <div class="col-sm"><div id="cases_new"></div></div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm"><div id="deaths_percapita_new"></div></div>
+        <div class="col-sm"><div id="cases_percapita_new"></div></div>
+      </div>
+      
       <div class="row">
         <div class="col-sm"><div id="deaths_percapita"></div></div>
         <div class="col-sm"><div id="cases_percapita"></div></div>
