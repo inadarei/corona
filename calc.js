@@ -41,11 +41,11 @@ function to_plot_data(data) {
   return plot_data;
 }
 
-function percapita(data, population) {
+function percapita(data, population, newOnly = false) {
   let data_pop = {};
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
-      data_pop[key] = data[key]/population*100000;
+        data_pop[key] = data[key]/population*100000;
     }
   }
   return data_pop;
@@ -101,20 +101,45 @@ function weighted_moving_averages(_data) {
   return result;
 }
 
+// Convert cumulative values to diffs (new values only)
+// data passed-in is an object with dates as keys and values as array!
+function new_values_only(data) {
+  let data_new = {};
+  let lastVal = -1;
+  for (var key in data) {
+    if (data.hasOwnProperty(key)) {
+      if (lastVal != -1) {
+        data_new[key] = data[key] - lastVal;
+      } 
+      lastVal = data[key];
+    }
+  }
+  return data_new;
+}
+
 function draw (states, type) {
   let data = [];
+  let data_new = [];  
   let data_percapita = [];
+  let data_percapita_new = [];
   let data_growth = [];
 
+  // Absolute Numbers for cases and deaths
   states.forEach((state) => {
     let only_state = states_data[state][type];
+    let only_state_new = new_values_only(states_data[state][type]);
     if (wmaMode) {
       only_state = weighted_moving_averages(only_state);
+      only_state_new = weighted_moving_averages(only_state_new);
     }
 
     const plot_data = to_plot_data(only_state)
     plot_data["name"] = state;    
     data.push(plot_data);
+
+    const plot_data_new = to_plot_data(only_state_new)
+    plot_data_new["name"] = state;    
+    data_new.push(plot_data_new);
   })
 
   let layout = {
@@ -122,19 +147,29 @@ function draw (states, type) {
   };
   Plotly.newPlot(type, data, layout);
 
+  layout = {
+    title: 'New ' + capitalize(type)
+  };
+  Plotly.newPlot(type+"_new", data_new, layout);
 
+  // Per-Capita Numbers for cases and deaths: cumulative (default) and new ones
   states.forEach((state) => {
     let only_state = states_data[state][type];
     const population = state_populations[state];
 
-    let percapita_values = percapita(only_state, population);
+    let percapita_values     = percapita(only_state, population, false);
+    let percapita_values_new = new_values_only(percapita_values)
     if (wmaMode) {
       percapita_values = weighted_moving_averages(percapita_values);
+      percapita_values_new = weighted_moving_averages(percapita_values_new)
     }
     const plot_data = to_plot_data(percapita_values)
+    const plot_data_new = to_plot_data(percapita_values_new)
     plot_data["name"] = state;
+    plot_data_new["name"] = state;
 
     data_percapita.push(plot_data);
+    data_percapita_new.push(plot_data_new);
   })
 
   layout = {
@@ -142,6 +177,12 @@ function draw (states, type) {
   };  
   Plotly.newPlot(type + "_percapita", data_percapita, layout);
 
+  layout = {
+    title:  'New ' + capitalize(type) + ' Per 100,000 Population'
+  };  
+  Plotly.newPlot(type + "_percapita_new", data_percapita_new, layout);
+
+  // Growth rates for cases only
   if (type == 'cases') {
     states.forEach((state) => {
       const only_state = states_data[state][type];
