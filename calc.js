@@ -1,4 +1,15 @@
-let wmaMode = true;
+let wmaMode = detectWMAMode();
+
+function detectWMAMode() {
+  const params = new URLSearchParams(document.location.search.substring(1));
+  const wma_param = params.get("wma"); 
+  if (wma_param != null) { 
+    return (wma_param === 'true');
+  } else {
+    return false //default
+  }
+}
+
 function switchWMA(_mode) {
   wmaMode = _mode;
   const states = $('#state_selector').val();
@@ -9,7 +20,7 @@ function switchWMA(_mode) {
 function capitalize(string) {
     let ret =  string.charAt(0).toUpperCase() + string.slice(1);
     if (wmaMode) {
-      return ret + " (WMA)";
+      return ret + " (7-day average)";
     } else {
       return ret;
     }
@@ -19,7 +30,7 @@ function capitalize(string) {
 function to_plot_data(data) {
   plot_data = {};
   plot_data["x"] = [];
-  plot_data["y"] = [];
+  plot_data["y"] = []
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
         plot_data["x"].push(key);
@@ -71,7 +82,7 @@ function weighted_moving_averages(_data) {
   const keys = Object.keys(_data);
   const result = {};
   let counter = 0;
-  const wma_cap = 14; // max points in the past to take into account, for weighted moving averages
+  const wma_cap = 7; // max points in the past to take into account, for weighted moving averages
 
   for (const key of  keys) {
     const currKey = keys[counter];
