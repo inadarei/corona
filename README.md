@@ -6,7 +6,7 @@ COVID-19 US Data Analysis
 ```console
 > python3 -m venv venv
 > . venv/bin/activate
-> . pip install -r requirements.txt
+> pip install -r requirements.txt
 > deactivate
 > make refresh-data
 ```
